@@ -296,6 +296,17 @@ export default {
         onError: 'If any record fails to import:',
         onErrorFail: 'Cancel import',
         onErrorSkip: 'Skip record',
+        report: {
+          title: 'Record import error report',
+          startedAt: 'Started At',
+          finishedAt: 'Finished At',
+          totalRecords: 'Total records',
+          importedRecords: 'Imported records',
+          failedRecords: 'Failed records',
+          line: 'Line',
+          record: 'Record',
+          errors: 'Errors',
+        },
       },
     },
     record: {

@@ -1,71 +1,101 @@
 <template>
-  <b-card header-bg-variant="white"
-          footer-bg-variant="white">
+  <b-card
+    header-bg-variant="white"
+    footer-bg-variant="white"
+  >
+    <b-form-group
+      :label="$t('block.recordList.import.report.title')"
+    >
+      <div
+        class="small pl-2"
+      >
+        <b>{{ $t('block.recordList.import.report.startedAt') }}</b>: {{ datify(progress.startedAt) }}
+      </div>
 
-    <h5>
-      #Record import error report#
-    </h5>
-    <ul>
-      <li>
-        <b>#started at#</b>: {{ datify(progress.startedAt) }}
-      </li>
-      <li>
-        <b>#finished at#</b>: {{ datify(progress.finishedAt) }}
-      </li>
-      <li>
-        <b>#total records#</b>: {{ datify(progress.entryCount) }}
-      </li>
-      <li>
-        <b>#imported records#</b>: {{ progress.completed }}
-      </li>
-      <li>
-        <b>#failed records#</b>: {{ progress.failed }}
-      </li>
-    </ul>
+      <div
+        class="small pl-2"
+      >
+        <b>{{ $t('block.recordList.import.report.finishedAt') }}</b>: {{ datify(progress.finishedAt) }}
+      </div>
 
-    <b-table-simple class="w-100" striped>
-      <b-thead>
-        <b-tr>
-          <b-th class="fit">#</b-th>
-          <b-th>#Record#</b-th>
-          <b-th>#Errors#</b-th>
-        </b-tr>
-      </b-thead>
+      <div
+        class="small pl-2"
+      >
+        <b>{{ $t('block.recordList.import.report.totalRecords') }}</b>: {{ progress.entryCount }}
+      </div>
 
-      <b-tbody>
-        <b-tr
-          v-for="(li, ix) in progress.failLog"
-          :key="ix"
-          p-0
+      <div
+        class="small pl-2"
+      >
+        <b>{{ $t('block.recordList.import.report.importedRecords') }}</b>: <span class="text-success">{{ progress.completed }}</span>
+      </div>
+
+      <div
+        class="small pl-2"
+      >
+        <b>{{ $t('block.recordList.import.report.failedRecords') }}</b>: <span class="text-danger">{{ progress.failed }}</span>
+      </div>
+    </b-form-group>
+
+    <b-table
+      id="error-list"
+      hover
+      outlined
+      fixed
+      class="mb-0"
+      head-variant="light"
+      :items="progress.failLog"
+      :fields="fields"
+      @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)"
+    >
+      <template #cell(record)="{ item: l }">
+        <span
+          class="text-truncate"
         >
-          <b-td class="fit">
-            {{ li.index }}
-          </b-td>
-          <b-td>
-            <ul>
-              <li
-                v-for="(rv, iy) in li.record.values"
-                :key="iy"
-              >
-                <b>{{ rv.name }}</b>: {{ rv.value }}
-              </li>
-            </ul>
-          </b-td>
+          <span
+            v-for="(rv, iy) in l.record.values"
+            :key="iy"
+          >
+            <b>{{ rv.name }}</b>: {{ rv.value }}<span v-if="iy < l.record.values.length - 1">, </span>
+          </span>
+        </span>
+      </template>
+      <template #cell(error)="{ item: l }">
+        <span
+          class="text-truncate text-danger"
+        >
+          {{ l.error.join(', ') }}
+        </span>
+      </template>
+      <template #row-details="{ item: l }">
+        <b-card-group class="m-3 mb-4">
+          <b-card
+            :header="$t('block.recordList.import.report.record')"
+            class="small"
+          >
+            <div
+              v-for="(rv, iy) in l.record.values"
+              :key="iy"
+            >
+              <b>{{ rv.name }}</b>: {{ rv.value }}
+            </div>
+          </b-card>
 
-          <b-td>
-            <ul>
-              <li
-                v-for="(e, ei) in li.error"
-                :key="ei"
-              >
-                {{ e }}
-              </li>
-            </ul>
-
-          </b-td>
-        </b-tr>
-      </b-tbody>
-    </b-table-simple>
+          <b-card
+            :header="$t('block.recordList.import.report.errors')"
+            class="small"
+          >
+            <div
+              v-for="(e, ei) in l.error"
+              :key="ei"
+              class="text-danger"
+            >
+              {{ e }}
+            </div>
+          </b-card>
+        </b-card-group>
+      </template>
+    </b-table>
 
     <div slot="footer">
       <b-button variant="dark"
@@ -105,6 +135,28 @@ export default {
     progress () {
       return this.session.progress
     },
+
+    fields () {
+      return [
+        {
+          key: 'index',
+          label: this.$t('block.recordList.import.report.line'),
+          sortable: true,
+          class: 'fit',
+          tdClass: 'border-top pointer',
+        },
+        {
+          key: 'record',
+          label: this.$t('block.recordList.import.report.record'),
+          tdClass: 'border-top text-truncate pointer',
+        },
+        {
+          key: 'error',
+          label: this.$t('block.recordList.import.report.errors'),
+          tdClass: 'border-top text-truncate pointer',
+        },
+      ]
+    },
   },
 
   methods: {
@@ -119,15 +171,17 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .progress-label {
   font-size: 15px;
 }
 
-.table td.fit,
-.table th.fit {
+.fit {
   white-space: nowrap;
-  width: 1%;
+  width: 15%;
 }
 
+.pointer {
+  cursor: pointer;
+}
 </style>
