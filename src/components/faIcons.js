@@ -34,6 +34,7 @@ import {
   faChevronLeft,
   faChevronDown,
   faShareAlt,
+  faArrowRight,
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -106,4 +107,5 @@ library.add(
   faChevronLeft,
   faChevronDown,
   faShareAlt,
+  faArrowRight,
 )
