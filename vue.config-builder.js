@@ -1,5 +1,4 @@
 var webpack = require('webpack')
-var exec = require('child_process').execSync
 var path = require('path')
 var Vue = require('vue')
 
@@ -41,7 +40,7 @@ module.exports = ({ appFlavour, appLabel, version = process.env.BUILD_VERSION, t
         new webpack.DefinePlugin({
           FLAVOUR: JSON.stringify(appFlavour),
           WEBAPP: JSON.stringify(appLabel),
-          VERSION: JSON.stringify(version || ('' + exec('git describe --always --tags')).trim()),
+          VERSION: JSON.stringify(version),
           BUILD_TIME: JSON.stringify((new Date()).toISOString()),
         }),
       ],
