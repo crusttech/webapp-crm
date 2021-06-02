@@ -1237,4 +1237,11 @@ export default {
       successful: 'Import successful',
     },
   },
+  tour: {
+    buttonTour: 'Tour',
+    buttonPrevious: 'Back',
+    buttonNext: 'Next',
+    buttonSkip: 'Skip tour',
+    buttonStop: 'Finish',
+  },
 }

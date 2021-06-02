@@ -9,7 +9,7 @@
             header-class="border-bottom"
           >
             <div slot="header">
-              <h1 class="mb-3">
+              <h1 data-v-onboarding="module-edit" class="mb-3">
                 {{ $t('module.edit.title') }}
               </h1>
               <b-row no-gutters
@@ -82,6 +82,7 @@
                     <label class="text-primary">{{ $t('module.newLabel') }}</label>
                     <b-form-input required
                                   v-model="module.name"
+                                   data-v-onboarding="module-name"
                                   :placeholder="$t('module.newPlaceholder')"></b-form-input>
                   </b-form-group>
                 </b-col>
@@ -98,7 +99,7 @@
             </b-container>
             <hr>
             <b-container fluid class="px-4">
-              <h5 class="mb-3 mt-1">{{ $t('module.edit.manageRecordFields') }}</h5>
+              <h5 class="mb-3 mt-1" data-v-onboarding="manage-records">{{ $t('module.edit.manageRecordFields') }}</h5>
               <b-row no-gutters>
                 <b-form-group class="w-100">
                   <table class="table table-sm table-borderless table-responsive-lg">
@@ -191,6 +192,7 @@
         @saveAndClose="handleSave({ closeOnSuccess: true })"
       />
     </portal>
+   <tour name="ModuleEdit" ref="tour" />
   </div>
 </template>
 
@@ -205,6 +207,7 @@ import { compose, NoID } from '@cortezaproject/corteza-js'
 import EditorToolbar from 'corteza-webapp-compose/src/components/Admin/EditorToolbar'
 import Export from 'corteza-webapp-compose/src/components/Admin/Export'
 import { handleState } from 'corteza-webapp-compose/src/lib/handle'
+import Tour from 'corteza-webapp-compose/src/components/Tour/Tour'
 
 export default {
   components: {
@@ -215,6 +218,7 @@ export default {
     FederationSettings,
     EditorToolbar,
     Export,
+    Tour,
   },
 
   props: {
@@ -242,7 +246,6 @@ export default {
       },
     }
   },
-
   computed: {
     ...mapGetters({
       pages: 'page/set',
@@ -324,7 +327,9 @@ export default {
       immediate: true,
     },
   },
-
+  mounted () {
+    this.$refs.tour.start()
+  },
   methods: {
     ...mapActions({
       findModuleByID: 'module/findByID',

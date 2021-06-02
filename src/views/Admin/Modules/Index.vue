@@ -9,7 +9,7 @@
             <b-card-header header-bg-variant="white"
                            class="py-3"
             >
-              <h1 class="mb-3">
+              <h1 class="mb-3" data-v-onboarding="module-list">
                 {{ $t('module.title') }}
               </h1>
               <b-row
@@ -23,6 +23,7 @@
                     size="lg"
                     class="mr-1 mb-1 float-left"
                     :to="{ name: 'admin.modules.create' }"
+                    data-v-onboarding="new-module"
                   >
                     {{ $t('module.createLabel') }}
                   </b-btn>
@@ -32,6 +33,7 @@
                     :namespace="namespace"
                     type="module"
                     class="mr-1 mb-1 float-left"
+                    data-v-onboarding="import-export"
                   />
 
                   <export
@@ -45,10 +47,11 @@
                     :buttonLabel="$t('general.label.permissions')"
                     buttonVariant="light"
                     class="btn-lg mb-1"
+                    data-v-onboarding="permissions"
                   />
                 </div>
                 <div class="flex-grow-1 mb-1">
-                  <b-input-group>
+                  <b-input-group data-v-onboarding="search">
                     <b-input
                       v-model.trim="query"
                       class="mw-100"
@@ -99,7 +102,8 @@
                 <template v-slot:cell(updatedAt)="{ item: m }">
                   {{ (m.updatedAt || m.createdAt) | locDateOnly }}
                 </template>
-                <template v-slot:cell(actions)="{ item: m }">
+                <template v-slot:cell(actions)="{ item: m, index }">
+                  <div v-if="index===0"  data-v-onboarding="builder"></div>
                   <b-button
                     @click="openPageBuilder(m)"
                     variant="light"
@@ -127,6 +131,7 @@
         </b-col>
       </b-row>
     </b-container>
+    <tour name="ModuleList" ref="tour" />
   </div>
 </template>
 <script>
@@ -134,6 +139,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { compose } from '@cortezaproject/corteza-js'
 import Import from 'corteza-webapp-compose/src/components/Admin/Import'
 import Export from 'corteza-webapp-compose/src/components/Admin/Export'
+import Tour from 'corteza-webapp-compose/src/components/Tour/Tour'
 
 export default {
   name: 'ModuleList',
@@ -141,6 +147,7 @@ export default {
   components: {
     Import,
     Export,
+    Tour,
   },
 
   props: {
@@ -200,7 +207,9 @@ export default {
       return (moduleID) => this.pages.find(p => p.moduleID === moduleID)
     },
   },
-
+  mounted () {
+    this.$refs.tour.start()
+  },
   methods: {
     ...mapActions({
       createModule: 'module/create',

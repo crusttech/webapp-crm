@@ -1,4 +1,5 @@
 <template>
+<div>
   <div
     class="overflow-auto"
     v-if="loaded"
@@ -11,7 +12,7 @@
     <b-container class="pt-2 pb-5">
       <b-row no-gutters>
         <b-col>
-          <h1>
+          <h1 data-v-onboarding="welcome">
             {{ $t('namespace.title') }}
           </h1>
         </b-col>
@@ -24,10 +25,12 @@
           <b-btn :to="{ name: 'namespace.create' }"
                  variant="primary"
                  size="lg"
+                 data-v-onboarding="new-namespace"
           >
               {{ $t('namespace.create') }}
           </b-btn>
           <c-permissions-button
+            data-v-onboarding="permissions"
             v-if="canGrant"
             resource="compose:namespace:*"
             buttonVariant="light"
@@ -35,7 +38,7 @@
             class="ml-1 btn-lg"
           />
         </div>
-        <div class="flex-grow-1 mt-1">
+        <div class="flex-grow-1 mt-1" data-v-onboarding="search">
           <b-input-group>
             <b-form-input
               v-model.trim="query"
@@ -51,6 +54,7 @@
             </b-input-group-append>
           </b-input-group>
         </div>
+         <tour-button class="ml-1" data-v-onboarding="tour"></tour-button>
       </b-row>
 
       <b-row
@@ -73,13 +77,19 @@
       </b-row>
     </b-container>
   </div>
+  <tour name="Namespaces" ref="tour" />
+ </div>
 </template>
 <script>
 import NamespaceItem from 'corteza-webapp-compose/src/components/Namespaces/NamespaceItem'
+import Tour from 'corteza-webapp-compose/src/components/Tour/Tour'
+import TourButton from 'corteza-webapp-compose/src/components/Tour/TourButton'
 
 export default {
   components: {
     NamespaceItem,
+    Tour,
+    TourButton,
   },
 
   data () {
@@ -123,9 +133,15 @@ export default {
       this.$ComposeAPI.permissionsEffective().then((p) => {
         this.canCreateNamespace = p.filter(per => per.operation === 'namespace.create')[0].allow
         this.canGrant = p.filter(per => per.operation === 'grant')[0].allow
+        this.startTour()
         this.loaded = true
       })
     }).catch(errHandler)
+  },
+  methods: {
+    startTour () {
+      this.$refs.tour.start()
+    },
   },
 }
 </script>
